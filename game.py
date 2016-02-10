@@ -29,21 +29,18 @@ class Game:
 	def dealer_draw_hand(self, ai):
 		"""Have the dealer deal himself a hand"""
 		print("The {} deals a hand for himself (Does he cheat??????)...".format(self.dealer_name))
-		return self.dealer_draw_hand
+		return self.dealer_hand
 
 	def player_hit(self, user):
 		"""If the player chooses to hit, give him a card"""
 		user.hand.append(user.new_card())
 		print("The dealer deals you another card... Here is what you got...\n")
+		return user.hand
 
 	def dealer_hit(self, ai):
 		"""If the dealer chooses to hit have him deal himself a card"""
 		ai.dealer_hand.append(ai.dealer_new_card())
 		print("The {} decides to hit and adds another card to his hand...".format(ai.dealer_name))
-		if ai.check_bust(ai.dealer_hand):
-			return True
-		else:
-			return False
 
 	def player_stay(self):
 		"""If the player decides to stay, do not deal him anymore cards"""
