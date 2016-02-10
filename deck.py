@@ -13,14 +13,10 @@ class Deck:
 			for card in itertools.product(self.ranks, self.suits)])
 		self.hand = random.sample(self.deck, 2)
 
-	def dealer_new_card(self):
-		"""Give the dealer a card when dealer hits"""
-		return random.sample(self.deck, 1)
-
 	def check_bust(self, hand):
 		"""Check if player has busted or not"""
 		numbers = []
-		numbers = self.grab_numbers(numbers, hand)
+		numbers = self.grab_numbers(hand)
 		total = sum([num for num in numbers])
 		if total > 21:
 			return True
@@ -29,9 +25,9 @@ class Deck:
 		else:
 			return False
 
-	def grab_numbers(self, numbers, hand):
+	def grab_numbers(self, hand):
 		"""Grab only the ranks from the hand"""
-		converter = []
+		numbers = []
 		for card in hand:
 			for value in card[0]:
 				try:
@@ -48,8 +44,7 @@ class Deck:
 
 	def calculate_hand(self, hand):
 		"""Calculate the score of the hand"""
-		score = []
-		score = self.grab_numbers(score, hand)
+		score = self.grab_numbers(hand)
 		total = sum([num for num in score])
 		return total
 

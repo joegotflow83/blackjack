@@ -105,7 +105,7 @@ class Game:
 		self.score[0] += 1
 		self.rounds += 1
 		print("Since the dealer bust you win the round!")
-		print(self.summary())
+		print(self.summary()  )
 		return
 
 	def player_lose(self, player_total, ai_total):
@@ -113,7 +113,7 @@ class Game:
 		self.score[1] += 1
 		self.rounds += 1
 		print("You had {} and the dealer had {}\n".format(player_total, ai_total))
-		return "You lost the round!\n"
+		return "You lost the round!"
 
 	def tie_game(self, player_total, ai_total):
 		"""Return that the round ended in a tie"""
