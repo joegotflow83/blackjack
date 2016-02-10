@@ -41,16 +41,17 @@ class Game:
 		"""If the dealer chooses to hit have him deal himself a card"""
 		ai.dealer_hand.append(ai.dealer_new_card())
 		print("The {} decides to hit and adds another card to his hand...".format(ai.dealer_name))
+		return ai.dealer_hand
 
-	def player_stay(self):
+	def player_stay(self, user):
 		"""If the player decides to stay, do not deal him anymore cards"""
 		print("You stay and the dealer does not deal you anymore cards...")
-		return self.hand
+		return user.hand
 
-	def dealer_stay(self):
+	def dealer_stay(self, ai):
 		"""If the dealer decides to stay he will not deal himself anymore cards"""
 		print("The {} decides not to hit anymore and stays...".format(self.dealer_name))
-		return self.dealer_hand
+		return ai.dealer_hand
 
 	def player_hit_or_stay(self, user):
 		"""If player hits, run the player hit func and if player stays, run the stay func"""
@@ -64,22 +65,19 @@ class Game:
 					print("Oh no! You went bust!")
 					break
 			elif decision == 'stay':
-				return user.player_stay()
+				return user.player_stay(user)
 				break
 		return self.hand
 
 	def dealer_hit_or_stay(self, ai):
 		"""If ai hits, run the dealer hit func and if ai stays, run the stay func"""
-		for ai_turns in range(2):
-			ai_hit_or_stay = random.randint(0, 2)
-			if ai_hit_or_stay == 1:
-				ai.dealer_hit(ai)
-				if ai.check_bust(ai.dealer_hand):
-					print("The dealer went bust!")
-					break
-			else:
-				ai.dealer_stay()
+		while ai.calculate_hand(ai.dealer_hand) < 17:
+			ai.dealer_hit(ai)
+			if ai.check_bust(ai.dealer_hand):
+				print("The dealer went bust!")
 				break
+		else:
+			ai.dealer_stay(ai)
 		return self.dealer_hand
 
 	def invalid_input(self, user):
@@ -107,6 +105,7 @@ class Game:
 		self.score[0] += 1
 		self.rounds += 1
 		print("Since the dealer bust you win the round!")
+		print(self.summary())
 		return
 
 	def player_lose(self, player_total, ai_total):
@@ -142,6 +141,8 @@ class Game:
 			return self.player_bust()
 		ai_hand = ai.dealer_draw_hand(ai)
 		ai_hand = ai.dealer_hit_or_stay(ai)
+		if ai.check_bust(ai.dealer_hand):
+			return self.dealer_bust()
 		player_total = user.calculate_hand(user.hand)
 		ai_total = ai.calculate_hand(ai.dealer_hand)
 		self.check_victory(player_total, ai_total)
