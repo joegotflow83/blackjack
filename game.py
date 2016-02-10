@@ -35,10 +35,6 @@ class Game:
 		"""If the player chooses to hit, give him a card"""
 		user.hand.append(user.new_card())
 		print("The dealer deals you another card... Here is what you got...\n")
-		if user.check_bust(user.hand):
-			return True
-		else:
-			return False
 
 	def dealer_hit(self, ai):
 		"""If the dealer chooses to hit have him deal himself a card"""
@@ -64,8 +60,6 @@ class Game:
 		while True:
 			print(self.hand)
 			decision = input("Do you want to hit or stay? ").lower()
-			#if 'hit' or 'stay' not in decision:
-				#return self.invalid_input()
 			if decision == 'hit':
 				user.player_hit(user)
 				if user.check_bust(user.hand):
@@ -91,10 +85,10 @@ class Game:
 				break
 		return self.dealer_hand
 
-	def invalid_input(self):
+	def invalid_input(self, user):
 		"""Tell the player they have typed something invalid"""
 		print("I am sorry, but you have typed something invalid. Try again")
-		return self.round(user, ai)
+		return self.player_hit_or_stay(user)
 
 	def player_win(self, player_total, ai_total):
 		"""Let the player know he wins the game and add a point for the player"""
