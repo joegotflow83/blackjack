@@ -22,22 +22,24 @@ class Deck:
 		numbers = []
 		numbers = self.grab_numbers(numbers, hand)
 		total = sum([num for num in numbers])
-		if total >= 21:
+		if total > 21:
 			return True
+		elif total == 21:
+			return False
 		else:
 			return False
 
 	def grab_numbers(self, numbers, hand):
 		"""Grab only the ranks from the hand"""
+		converter = []
 		for card in hand:
-			for value in card[:1]:
+			for value in card[0]:
 				try:
 					value = int(value)
 				except ValueError:
 					if value in 'TJQK':
 						value = 10
 					elif value in 'A':
-						
 						value = 11
 			numbers.append(value)
 		if numbers[0] == 11 and numbers[1] == 11:

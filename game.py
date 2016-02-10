@@ -42,9 +42,9 @@ class Game:
 
 	def dealer_hit(self, ai):
 		"""If the dealer chooses to hit have him deal himself a card"""
-		self.dealer_hand.append(ai.dealer_new_card)
-		print("The {} decides to hit and adds another card to his hand...".format(self.dealer_name))
-		if ai.check_bust(self.dealer_hand):
+		ai.dealer_hand.append(ai.dealer_new_card())
+		print("The {} decides to hit and adds another card to his hand...".format(ai.dealer_name))
+		if ai.check_bust(ai.dealer_hand):
 			return True
 		else:
 			return False
@@ -143,7 +143,6 @@ class Game:
 		ai = Dealer()
 		return (user, ai)
 
-
 	def round(self, user, ai):
 		"""Simulate a round of blackjack against the player and the computer as the dealer"""
 		player_hand = user.player_draw_hand()
@@ -154,6 +153,11 @@ class Game:
 		ai_hand = ai.dealer_hit_or_stay(ai)
 		player_total = user.calculate_hand(user.hand)
 		ai_total = ai.calculate_hand(ai.dealer_hand)
+		self.check_victory(player_total, ai_total)
+		return
+
+	def check_victory(self, player_total, ai_total):
+		"""Check who won the round"""
 		if player_total > ai_total:
 			print(self.player_win(player_total, ai_total))
 			print(self.summary())
@@ -211,7 +215,7 @@ class Dealer(Game, Deck):
 
 	def dealer_new_card(self):
 		"""Give the dealer a card when dealer hits"""
-		return random.sample(self.deck, 1)
+		return ''.join(random.sample(self.deck, 1))
 
 	def __getitem__(self):
 
@@ -222,7 +226,7 @@ if __name__ == '__main__':
 	os.system('cls' if os.name == 'nt' else 'clear')
 	print("Welcome to blackjack! Best of 3 wins!")
 	game = Game()
-	while game.score[0] < 3 or game.score[1] < 3:
+	while game.rounds < 3:
 		players = game.setup()
 		game.round(players[0], players[1])
 	else:
