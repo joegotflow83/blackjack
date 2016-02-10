@@ -19,6 +19,7 @@ class Game:
 	def __init__(self):
 		"""Initialize variables"""
 		self.score = [0, 0]
+		self.rounds = 0
 
 	def player_draw_hand(self):
 		"""Have the dealer deal a hand to the player"""
@@ -27,15 +28,14 @@ class Game:
 
 	def dealer_draw_hand(self):
 		"""Have the dealer deal himself a hand"""
-		print("The {} deals a hand for himself (Does he cheat??????)...")
+		print("The {} deals a hand for himself (Does he cheat??????)...".format(self.dealer_name))
 		return self.dealer_draw_hand
 
 	def player_hit(self, user):
 		"""If the player chooses to hit, give him a card"""
 		user.hand.append(user.new_card())
 		print("The dealer deals you another card... Here is what you got...\n")
-		if user.check_bust(self.hand):
-			print("Oh no! You went bust!")
+		if user.check_bust(user.hand):
 			return True
 		else:
 			return False
@@ -67,8 +67,10 @@ class Game:
 			#if 'hit' or 'stay' not in decision:
 				#return self.invalid_input()
 			if decision == 'hit':
-				bust_or_not = user.player_hit(user)
-				if bust_or_not:
+				user.player_hit(user)
+				if user.check_bust(user.hand):
+					print(user.hand)
+					print("Oh no! You went bust!")
 					break
 			elif decision == 'stay':
 				return user.player_stay()
@@ -81,8 +83,8 @@ class Game:
 			ai_hit_or_stay = random.randint(0, 2)
 			if ai_hit_or_stay == 1:
 				ai.dealer_hit(ai)
-				bust_or_not = ai.dealer_hit(ai)
-				if bust_or_not:
+				if ai.check_bust(ai.dealer_hand):
+					print("The dealer went bust!")
 					break
 			else:
 				ai.dealer_stay()
@@ -97,12 +99,29 @@ class Game:
 	def player_win(self, player_total, ai_total):
 		"""Let the player know he wins the game and add a point for the player"""
 		self.score[0] += 1
+		self.rounds += 1
 		print("You had {} and the dealer had {}\n".format(player_total, ai_total))
 		return "You win the round!"
+
+	def player_bust(self):
+		"""Display the player went bust so dealer wins the round"""
+		self.score[1] += 1
+		self.rounds += 1
+		print("Since you bust the dealer wins the round!")
+		print(self.summary())
+		return
+
+	def dealer_bust(self):
+		"""Display the dealer went bust so the player wins the round"""
+		self.score[0] += 1
+		self.rounds += 1
+		print("Since the dealer bust you win the round!")
+		return
 
 	def player_lose(self, player_total, ai_total):
 		"""Let the player know he loses the game and add a point for the ai"""
 		self.score[1] += 1
+		self.rounds += 1
 		print("You had {} and the dealer had {}\n".format(player_total, ai_total))
 		return "You lost the round!\n"
 
@@ -113,14 +132,24 @@ class Game:
 
 	def summary(self):
 		"""Print out the scores of the player and the computer"""
+		print('\n\n' + ('_' * 20))
 		print("Player: {}".format(self.score[0]))
 		print("Dealer: {}".format(self.score[1]))
 		return
+
+	def setup(self):
+		"""Set up the players for the game"""
+		user = Player()
+		ai = Dealer()
+		return (user, ai)
+
 
 	def round(self, user, ai):
 		"""Simulate a round of blackjack against the player and the computer as the dealer"""
 		player_hand = user.player_draw_hand()
 		player_hand = user.player_hit_or_stay(user)
+		if user.check_bust(user.hand):
+			return self.player_bust()
 		ai_hand = ai.dealer_draw_hand()
 		ai_hand = ai.dealer_hit_or_stay(ai)
 		player_total = user.calculate_hand(user.hand)
@@ -134,16 +163,22 @@ class Game:
 			print(self.summary())
 			return
 		else:
-			print(tie_game(player_total, ai_total))
+			print(self.tie_game(player_total, ai_total))
 			return
+
+	def clear(self):
+		"""Clear the screen for easier readability"""
+		if os.name == 'nt':
+			os.system('cls')
+		else:
+			os.system('clear')
 
 
 class Player(Game, Deck):
 
 
-	def __init__(self, player):
+	def __init__(self):
 		"""Initialize variables"""
-		self.player = player
 		self.suits = "chsd"
 		self.ranks = '23456789TJQKA'
 		self.deck = tuple([''.join(card)
@@ -152,7 +187,7 @@ class Player(Game, Deck):
 
 	def new_card(self):
 		"""Give the player a card when player hits"""
-		return random.sample(self.deck, 1)
+		return ''.join(random.sample(self.deck, 1))
 
 	def __getitem__(self):
 
@@ -185,7 +220,10 @@ class Dealer(Game, Deck):
 
 if __name__ == '__main__':
 	os.system('cls' if os.name == 'nt' else 'clear')
-	user = Player(player=input("What is your name player? "))
-	ai = Dealer()
+	print("Welcome to blackjack! Best of 3 wins!")
 	game = Game()
-	game.round(user, ai)
+	while game.score[0] < 3 or game.score[1] < 3:
+		players = game.setup()
+		game.round(players[0], players[1])
+	else:
+		print("Thanks for playing!")
