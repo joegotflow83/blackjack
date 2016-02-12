@@ -29,6 +29,7 @@ class Game:
 	def dealer_draw_hand(self, ai):
 		"""Have the dealer deal himself a hand"""
 		print("The {} deals a hand for himself (Does he cheat??????)...".format(self.dealer_name))
+		print("The {} shows a {} as his first card.".format(self.dealer_name, self.dealer_hand[0]))
 		return self.dealer_hand
 
 	def player_hit(self, user):
@@ -136,10 +137,10 @@ class Game:
 	def round(self, user, ai):
 		"""Simulate a round of blackjack against the player and the computer as the dealer"""
 		player_hand = user.player_draw_hand(user)
+		ai_hand = ai.dealer_draw_hand(ai)
 		player_hand = user.player_hit_or_stay(user)
 		if user.check_bust(user.hand):
 			return self.player_bust()
-		ai_hand = ai.dealer_draw_hand(ai)
 		ai_hand = ai.dealer_hit_or_stay(ai)
 		if ai.check_bust(ai.dealer_hand):
 			return self.dealer_bust()
